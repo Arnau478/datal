@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import time
 import argparse
 
 from Lexer import *
@@ -50,7 +49,7 @@ def compile(source, output=None, verbose=False):
     print("Compiled successfully")
 
 
-if(__name__ == "__main__"):
+if(__name__ == "__main__"): # BUG: When no args, whole code bugs
     argument_parser = argparse.ArgumentParser(description="Datal programming language compiler")
     argument_parser.add_argument("input", help="Path to the source file to compile")
     argument_parser.add_argument("-o", help="Compiled output path", metavar="FILE", dest='output')
