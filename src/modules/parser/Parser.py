@@ -1,7 +1,7 @@
-from TokenType import *
-from ParseError import *
-from ParseResult import *
-from SyntaxNodes import *
+from modules.struct.TokenType import *
+from modules.err.ParseError import *
+from modules.parser.ParseResult import *
+from modules.struct.SyntaxNodes import *
 
 class Parser:
     def __init__(self, tokens):

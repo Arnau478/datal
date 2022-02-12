@@ -1,7 +1,7 @@
-from Token import *
-from TokenType import *
-from LexicError import *
-from LexerResult import *
+from modules.struct.Token import *
+from modules.struct.TokenType import *
+from modules.err.LexicalError import *
+from modules.lexer.LexerResult import *
 
 DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 #TODO: Implement lower-case ALPHA
@@ -72,7 +72,7 @@ class Lexer:
                     self.advance()
                 
                 if(self.current_char == None):
-                    return LexerResult(LexicError("Unterminated string", self.line))
+                    return LexerResult(LexicalError("Unterminated string", self.line))
 
                 self.advance()
 
@@ -95,7 +95,7 @@ class Lexer:
             elif(self.current_char in ALPHA):
                 pass
             else:
-                return LexerResult(error=LexicError(f"Unexpected character {self.current_char}", self.line))
+                return LexerResult(error=LexicalError(f"Unexpected character {self.current_char}", self.line))
 
         tokens.append(Token(TokenType.EOF, self.line))
 

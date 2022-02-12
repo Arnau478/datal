@@ -2,10 +2,10 @@
 
 import argparse
 
-from Lexer import *
-from Parser import *
-from Compiler import *
-from Assembler import *
+from modules.lexer.Lexer import *
+from modules.parser.Parser import *
+from modules.compiler.Compiler import *
+from modules.assembler.Assembler import *
 
 def compile(source, output=None, verbose=False):
     print("Tokenizing... ", end="", flush=True)
@@ -37,7 +37,6 @@ def compile(source, output=None, verbose=False):
         print(compile_result.error)
         exit(1)
     asm_code = compile_result.result
-    open("temp.asm", "w").write(asm_code)
     print("Done")
 
     print("Assembling... ", end="", flush=True)

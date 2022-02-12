@@ -1,4 +1,4 @@
-from Error import *
+from modules.err.Error import *
 
 class ParseError(Error):
     def __init__(self, message, line):
