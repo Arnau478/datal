@@ -47,6 +47,9 @@ def compile(source, output=None, verbose=False):
     print()
     print("Compiled successfully")
 
+def get_output_path(input_path):
+    return os.path.splitext(input_path)[0]
+
 
 if(__name__ == "__main__"): # BUG: When no args, whole code bugs
     argument_parser = argparse.ArgumentParser(description="Datal programming language compiler")
@@ -57,4 +60,6 @@ if(__name__ == "__main__"): # BUG: When no args, whole code bugs
 
     source = open(args.input, "r").read()
 
-    compile(source, output=args.output, verbose=args.verbose)
+    output = args.output or get_output_path(args.input)
+
+    compile(source, output=output, verbose=args.verbose)
