@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+__version__ = "1.0.0"
+
 import argparse
 
 from modules.lexer.Lexer import *
@@ -56,7 +58,12 @@ if(__name__ == "__main__"): # BUG: When no args, whole code bugs
     argument_parser.add_argument("input", help="Path to the source file to compile")
     argument_parser.add_argument("-o", help="Compiled output path", metavar="FILE", dest='output')
     argument_parser.add_argument("-v", "--verbose", help="Turn on verbose/debug mode for compiler", action="store_true")
+    argument_parser.add_argument("--version", help="Show version", action="store_true")
     args = argument_parser.parse_args()
+
+    if(args.version):
+        print(datal_version)
+        exit(0)
 
     source = open(args.input, "r").read()
 
