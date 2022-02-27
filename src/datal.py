@@ -61,10 +61,6 @@ if(__name__ == "__main__"): # BUG: When no args, whole code bugs
     argument_parser.add_argument("--version", help="Show version", action="version", version=__version__)
     args = argument_parser.parse_args()
 
-    if(args.version):
-        print(datal_version)
-        exit(0)
-
     source = open(args.input, "r").read()
 
     output = args.output or get_output_path(args.input)
