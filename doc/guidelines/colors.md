@@ -1,25 +1,5 @@
 # DATAL COLOR PALETTE
-<div class="c" id="c1">#222831</div>
-<div class="c" id="c2">#393E46</div>
-<div class="c" id="c3">#00ADB5</div>
-<div class="c" id="c4">#EEEEEE</div>
-<style>
-    .c {
-        font-weight: bold;
-        padding: 5px;
-    }
-    #c1 {
-        background-color: #222831;
-    }
-    #c2 {
-        background-color: #393E46;
-    }
-    #c3 {
-        background-color: #00ADB5;
-        color: #222831;
-    }
-    #c4 {
-        background-color: #EEEEEE;
-        color: #222831;
-    }
-</style>
+![](https://dummyimage.com/300x100/222831/eee.png&text=222831)
+![](https://dummyimage.com/300x100/393E46/eee.png&text=393E46)
+![](https://dummyimage.com/300x100/00ADB5/222831.png&text=00ADB5)
+![](https://dummyimage.com/300x100/EEEEEE/222831.png&text=00ADB5)
