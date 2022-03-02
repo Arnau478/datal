@@ -28,65 +28,16 @@ class Parser:
     def advance_n(self, num):
         for i in range(num):
             self.advance()
+    
+    def match(self, type, value=None):
+        return self.current_tok.type == type and (self.current_tok.value == value or value == None)
 
     def parse(self):
         while(self.current_tok.type != TokenType.EOF and self.current_tok != None):
-            if(self.current_tok.type == TokenType.IDENTIFIER and self.next_tok.type == TokenType.EQ):
-                definition = self.par_definition()
-                if(definition.error): return definition
-                return ParseResult(definition.result)
-            else:
-                return ParseResult(error=ParseError("Expected definition", self.line))
-
-    def par_expression(self):
-        lam = self.par_lambda()
-        if(lam.error): return lam
-        return ParseResult(lam.result)
-    
-    def par_lambda(self):
-        args = []
-
-        if(self.current_tok.type != TokenType.LPAREN):
-            return ParseResult(error=ParseError("Expected '('", self.line))
-        
-        self.advance() # Advance '('
-
-        while(self.current_tok.type != TokenType.RPAREN and self.current_tok.type != TokenType.EOF):
-            if(self.current_tok.type == TokenType.EOF): # Unclosed parenthesis
-                return ParseResult(error=ParseError("Expected ')'", self.line))
-            
-            if(self.current_tok.type == TokenType.COMMA):
-                self.advance()
-
-            # TODO: Test if this works with no arguments
-            if(self.current_tok.type != TokenType.IDENTIFIER): # If not an identifier
-                return ParseResult(error=ParseError("Expected identifier", self.line))
-            
-            argname = self.current_tok # Save argument name token
-            self.advance() # Consume identifier
-
-            if(self.current_tok.type != TokenType.COLON): # Unclosed parenthesis
-                return ParseResult(error=ParseError("Expected ':'", self.line))
-            self.advance()
-
-            argtype = self.par_type()
-            if(argtype.error): return argtype
-
-            node = Node.Stmt.Definition(argname, argtype.result, None)
-
-            args.append(node)
-        
-        self.advance() # Advance ')'
-        if(self.current_tok.type != TokenType.COLON):
-            return ParseResult(error=ParseError("Expected ':'", self.line))
-        
-        self.advance()
-        
-        ret = self.par_type()
-
-        if(ret.error): return ret
-
-        return ParseResult(Node.Stmt.Function(args, ret.result))
+            if(self.current_tok.type == None):
+                return ParseResult(error=ParseError("Unexpected error ocurred", self.line))
+            fun = self.par_function()
+            return fun
     
     def par_type(self):
         if(self.next_tok.type == TokenType.LESS): # Parametrized
@@ -111,14 +62,52 @@ class Parser:
         node = Node.Type.Simple(self.current_tok)
         self.advance()
         return ParseResult(node)
+    
+    def par_function(self):
+        if(not self.match(TokenType.KEYWORD, "fun")):
+            return ParseResult(error=ParseError("Expected function declaration", self.line))
+        self.advance()
 
-    def par_definition(self):
-        id = self.current_tok
+        if(not self.match(TokenType.IDENTIFIER)):
+            return ParseResult(error=ParseError("Expected identifier", self.line))
+        fun_name = self.current_tok
         self.advance()
-        if(self.current_tok.type != TokenType.EQ):
-            return ParseResult(error=ParseError("Expected '='", self.line))
+
+        if(not self.match(TokenType.COLON)):
+            return ParseResult(error=ParseError("Expected ':'", self.line))
         self.advance()
-        
-        expr = self.par_expression()
-        if(expr.error): return expr
-        return ParseResult(Node.Stmt.Definition(id, None, expr.result)) # TODO: FIX THIS
+
+
+        fun_type = self.par_type()
+        if(fun_type.error): return fun_type
+        fun_type = fun_type.result
+
+        if(not self.match(TokenType.LPAREN)):
+            return ParseResult(error=ParseError("Expected '('", self.line))
+        self.advance()
+
+        argdefs = []
+
+        while(not (self.match(TokenType.RPAREN) or (self.current_tok == None))):
+            if(not self.match(TokenType.IDENTIFIER)):
+                return ParseResult(error=ParseError("Expected identifier", self.line))
+            name = self.current_tok
+            self.advance()
+
+            if(not self.match(TokenType.COLON)):
+                return ParseResult(error=ParseError("Expected ':'", self.line))
+            self.advance()
+
+            type = self.par_type()
+            if(type.error): return type
+            type = type.result
+
+            if(not self.match(TokenType.RPAREN)):
+                if(not self.match(TokenType.COMMA)):
+                    print(self.current_tok)
+                    return ParseResult(error=ParseError("Expected ','", self.line))
+                self.advance()
+
+            argdefs.append(Node.Stmt.Definition(name, type))
+
+        return ParseResult(Node.Stmt.Function(fun_name, argdefs, fun_type, None))

@@ -1,21 +1,21 @@
 class Node:
     class Stmt:
-        class Definition:
-            def __init__(self, target_tok, type, value):
-                self.target_tok = target_tok
-                self.type = type
-                self.value = value
-            
-            def __repr__(self):
-                return f"DEF({self.target_tok}, {self.type}, {self.value})"
-
         class Function:
-            def __init__(self, argdefs, type):
+            def __init__(self, name, argdefs, type, body):
+                self.name = name
                 self.argdefs = argdefs
                 self.type = type
+                self.body = body
             
             def __repr__(self):
-                return f"FUN({self.argdefs}, {self.type})"
+                return f"FUN({self.name}, {self.type}, {self.argdefs}, {self.body})"
+        class Definition:
+            def __init__(self, name, type):
+                self.name = name
+                self.type = type
+            
+            def __repr__(self):
+                return f"DEF({self.name}, {self.type})"
 
     class Type:
         class Simple:

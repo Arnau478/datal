@@ -23,8 +23,6 @@ class TokenType:
     NOT = 'NOT'
     NOT_EQ = 'NOT_EQ'
 
-    RARROW = 'RARROW'
-
     STRING = 'STRING'
     NUMBER = 'NUMBER'
     

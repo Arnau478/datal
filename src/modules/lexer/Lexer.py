@@ -4,6 +4,7 @@ from modules.err.LexicalError import *
 from modules.lexer.LexerResult import *
 
 keywords = [
+    'fun',
     'return'
 ]
 
@@ -73,9 +74,6 @@ class Lexer:
                 self.advance()
                 if(self.current_char == "="):
                     tokens.append(Token(TokenType.EQ_EQ, self.line))
-                    self.advance()
-                if(self.current_char == ">"):
-                    tokens.append(Token(TokenType.RARROW, self.line))
                     self.advance()
                 else:
                     tokens.append(Token(TokenType.EQ, self.line))
