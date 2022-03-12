@@ -3,6 +3,7 @@ import os
 
 from modules.compiler.CompileResult import *
 from modules.struct.TokenType import *
+from modules.struct.SyntaxNodes import *
 
 class Compiler:
     def __init__(self, ast):
@@ -30,7 +31,6 @@ class Compiler:
         result += "section .text\n"
         result += "\tmain:\n"
         result += self.visit(self.ast)
-        result += "\t\tcall _print_int\n"
         result += "\n"
         result += "\t\t; exit\n"
         result += "\t\tcall _exit\n"
@@ -38,54 +38,20 @@ class Compiler:
         return CompileResult(result=result)
     
     def visit(self, node):
-        return getattr(self, f"visit_node_{node.__class__.__name__}")(node)
+        try:
+            handler = getattr(self, f"visit_node_{node.__class__.__name__}")
+        
+            return handler(node)
+            
+        except AttributeError:
+            print("UNEXPECTED ERROR")
+            print(f"No visitor handler for type {node.__class__.__name__}")
+            exit(1)
 
-    def visit_node_Binary(self, node):
+    def visit_node_Function(self, node: Node):
         code = ""
 
-        code += self.visit(node.left)
-        code += self.visit(node.right)
+        self.visit(node.body)
 
-        if(node.op_tok.type == TokenType.PLUS):
-            code += "\t\tcall _add\n"
-        elif(node.op_tok.type == TokenType.MINUS):
-            code += "\t\tcall _subtract\n"
-        elif(node.op_tok.type == TokenType.MUL):
-            code += "\t\tcall _multiply\n"
-        elif(node.op_tok.type == TokenType.DIV):
-            code += "\t\tcall _divide\n"
-        elif(node.op_tok.type == TokenType.GREATER):
-            code += "\t\tcall _greater\n"
-        elif(node.op_tok.type == TokenType.GREATER_EQ):
-            code += "\t\tcall _greater_eq\n"
-        elif(node.op_tok.type == TokenType.LESS):
-            code += "\t\tcall _less\n"
-        elif(node.op_tok.type == TokenType.LESS_EQ):
-            code += "\t\tcall _less_eq\n"
-        elif(node.op_tok.type == TokenType.EQ_EQ):
-            code += "\t\tcall _equal\n"
-        elif(node.op_tok.type == TokenType.NOT_EQ):
-            code += "\t\tcall _not_equal\n"
-        else:
-            raise Exception(f"Undefined compiler case for binary operation '{node.op_tok.type}'")
+        self.visit(node)
 
-        return code
-
-    def visit_node_Unary(self, node):
-        code = ""
-
-        code += self.visit(node.right)
-
-        if(node.op_tok.type == TokenType.MINUS):
-            code += "\t\tcall _negate_number\n"
-        else:
-            raise Exception(f"Undefined compiler case for unary operation '{node.op_tok.type}'")
-
-        return code
-
-    def visit_node_Literal(self, node):
-        code = ""
-
-        code += f"\t\tpush {node.tok.value}\n"
-
-        return code
