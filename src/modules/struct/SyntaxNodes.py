@@ -1,3 +1,5 @@
+import json
+
 class Node:
     class Stmt:
         class Function:
@@ -8,14 +10,23 @@ class Node:
                 self.body = body
             
             def __repr__(self):
-                return f"FUN({self.name}, {self.type}, {self.argdefs}, {self.body})"
+                return {
+                    "name": self.__class__.__name__,
+                    "argdefs": self.argdefs,
+                    "type": self.type,
+                    "body": self.body,
+                }.__repr__()
         class Definition:
             def __init__(self, name, type):
                 self.name = name
                 self.type = type
             
             def __repr__(self):
-                return f"DEF({self.name}, {self.type})"
+                return {
+                    "name": self.__class__.__name__,
+                    "name": self.name,
+                    "type": self.type,
+                }.__repr__()
 
     class Type:
         class Simple:
@@ -23,7 +34,10 @@ class Node:
                 self.id = id
 
             def __repr__(self):
-                return f"S_TYPE({self.id})"
+                return {
+                    "name": self.__class__.__name__,
+                    "id": self.id,
+                }.__repr__()
 
         class Parameterized:
             def __init__(self, id, args):
@@ -31,4 +45,8 @@ class Node:
                 self.args = args
 
             def __repr__(self):
-                return f"P_TYPE({self.id}, {self.args})"
+                return {
+                    "name": self.__class__.__name__,
+                    "id": self.id,
+                    "args": self.args,
+                }.__repr__()
