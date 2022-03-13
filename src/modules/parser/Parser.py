@@ -37,7 +37,8 @@ class Parser:
             if(self.current_tok.type == None):
                 return ParseResult(error=ParseError("Unexpected error ocurred", self.line))
             fun = self.par_function()
-            return fun
+            if(fun.error): return fun
+            return ParseResult(fun.result)
     
     def par_type(self):
         if(self.next_tok.type == TokenType.LESS): # Parametrized
@@ -133,14 +134,24 @@ class Parser:
             if(con.error): return con
             con = con.result
 
-            if(self.next_tok.type != TokenType.RPAREN):
+            if(self.current_tok.type != TokenType.RPAREN):
                 return ParseResult(error=ParseError("Expected ')'", self.line))
+            self.advance()
             
             body = self.par_statement()
             if(body.error): return body
             body = body.result
 
-            return ParseResult(Node.Stmt.If(con, body))
+            if(self.match(TokenType.KEYWORD, "else")):
+                self.advance()
+                body_else = self.par_statement()
+                if(body_else.error): return body_else
+                body_else = body_else.result
+
+                return ParseResult(Node.Stmt.If(con, body, body_else))
+
+
+            return ParseResult(Node.Stmt.If(con, body, None))
 
         elif(self.match(TokenType.LBRACE)):
             self.advance()
@@ -160,14 +171,165 @@ class Parser:
 
             return ParseResult(Node.Stmt.Block(statements))
         
-        return ParseResult(error=ParseError("Expected statement", self.line))
+        expr = self.par_expression()
+        if(expr.error): return expr
+        expr = expr.result
+
+        if(not self.match(TokenType.SEMI)):
+            return ParseResult(error=ParseError("Expected ';'", self.line))
+        self.advance()
+        return ParseResult(expr)
     
     def par_expression(self):
         return self.par_or()
     
     def par_or(self):
         left = self.par_and()
+        if(left.error): return left
+        left = left.result
         
         while(self.match(TokenType.OR)):
-            pass
+            operator = self.current_tok
+            self.advance()
+            right = self.par_and()
+            if(right.error): return right
+            right = right.result
+            left = Node.Expr.Logical(left, operator, right)
 
+        return ParseResult(left)
+    
+    def par_and(self):
+        left = self.par_equality()
+        if(left.error): return left
+        left = left.result
+        
+        while(self.match(TokenType.AND)):
+            operator = self.current_tok
+            self.advance()
+            right = self.par_equality()
+            if(right.error): return right
+            right = right.result
+            left = Node.Expr.Logical(left, operator, right)
+
+        return ParseResult(left)
+    
+    def par_equality(self):
+        left = self.par_comparison()
+        if(left.error): return left
+        left = left.result
+        
+        while(self.match(TokenType.EQ_EQ) or self.match(TokenType.NOT_EQ)):
+            operator = self.current_tok
+            self.advance()
+            right = self.par_comparison()
+            if(right.error): return right
+            right = right.result
+            left = Node.Expr.Binary(left, operator, right)
+
+        return ParseResult(left)
+    
+    def par_comparison(self):
+        left = self.par_addition()
+        if(left.error): return left
+        left = left.result
+        
+        while(self.match(TokenType.GREATER) or self.match(TokenType.GREATER_EQ) or self.match(TokenType.LESS) or self.match(TokenType.LESS_EQ)):
+            operator = self.current_tok
+            self.advance()
+            right = self.par_addition()
+            if(right.error): return right
+            right = right.result
+            left = Node.Expr.Binary(left, operator, right)
+
+        return ParseResult(left)
+    
+    def par_addition(self):
+        left = self.par_multiplication()
+        if(left.error): return left
+        left = left.result
+        
+        while(self.match(TokenType.PLUS) or self.match(TokenType.MINUS)):
+            operator = self.current_tok
+            self.advance()
+            right = self.par_multiplication()
+            if(right.error): return right
+            right = right.result
+            left = Node.Expr.Binary(left, operator, right)
+
+        return ParseResult(left)
+    
+    def par_multiplication(self):
+        left = self.par_unary()
+        if(left.error): return left
+        left = left.result
+        
+        while(self.match(TokenType.MUL) or self.match(TokenType.DIV)):
+            operator = self.current_tok
+            self.advance()
+            right = self.par_unary()
+            if(right.error): return right
+            right = right.result
+            left = Node.Expr.Binary(left, operator, right)
+
+        return ParseResult(left)
+    
+    def par_unary(self):
+        if(self.match(TokenType.NOT) or self.match(TokenType.MINUS)):
+            operator = self.current_tok
+            self.advance()
+            right = self.par_unary()
+            if(right.error): return right
+            right = right.result
+            return Node.Expr.Unary(operator, right)
+        
+        call = self.par_call()
+        if(call.error): return call
+        return ParseResult(call.result)
+    
+    def par_call(self):
+        def finish_call(callee):
+            arguments = []
+            if(self.current_tok.type != TokenType.RPAREN):
+                first = True
+                while(self.match(TokenType.COMMA) or first):
+                    first = False
+                    self.advance()
+                    arg = self.par_expression()
+                    if(arg.error): return arg
+                    arg = arg.result
+                    arguments.append(arg)
+            
+            if(not self.match(TokenType.RPAREN)):
+                return ParseResult(error=ParseError("Expected ')'", self.line))
+            self.advance()
+
+            return ParseResult(Node.Expr.Call(callee, arguments))
+
+        expr = self.par_atom()
+        if(expr.error): return expr
+        expr = expr.result
+
+        while(True):
+            if(self.match(TokenType.LPAREN)):
+                expr = finish_call(expr)
+                if(expr.error): return expr
+                expr = expr.result
+            else: break
+        
+        return ParseResult(expr)
+    
+    def par_atom(self):
+        if(self.match(TokenType.NUMBER)):
+            res = ParseResult(Node.Expr.Literal(self.current_tok))
+            self.advance()
+            return res
+        if(self.match(TokenType.STRING)):
+            res = ParseResult(Node.Expr.Literal(self.current_tok))
+            self.advance()
+            return res
+        if(self.match(TokenType.IDENTIFIER)):
+            res = ParseResult(Node.Expr.VarAccess(self.current_tok))
+            self.advance()
+            return res
+        print(self.current_tok)
+        return ParseResult(error=ParseError("Expected atom", self.line))

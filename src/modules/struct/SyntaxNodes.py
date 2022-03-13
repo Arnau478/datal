@@ -3,8 +3,8 @@ import json
 class Node:
     class Stmt:
         class Function:
-            def __init__(self, name, argdefs, type, body):
-                self.name = name
+            def __init__(self, fun_name, argdefs, type, body):
+                self.fun_name = fun_name
                 self.argdefs = argdefs
                 self.type = type
                 self.body = body
@@ -12,6 +12,7 @@ class Node:
             def __repr__(self):
                 return {
                     "name": self.__class__.__name__,
+                    "fun_name": self.fun_name,
                     "argdefs": self.argdefs,
                     "type": self.type,
                     "body": self.body,
@@ -43,6 +44,87 @@ class Node:
                 return {
                     "name": self.__class__.__name__,
                     "statements": self.statements,
+                }.__repr__()
+        class If:
+            def __init__(self, condition, body, body_else):
+                self.condition = condition
+                self.body = body
+                self.body_else = body_else
+            
+            def __repr__(self):
+                return {
+                    "name": self.__class__.__name__,
+                    "condition": self.condition,
+                    "body": self.body,
+                    "body_else": self.body_else,
+                }.__repr__()
+
+    class Expr:
+        class Logical:
+            def __init__(self, left, op, right):
+                self.left = left
+                self.op = op
+                self.right = right
+            
+            def __repr__(self):
+                return {
+                    "name": self.__class__.__name__,
+                    "left": self.left,
+                    "op": self.op,
+                    "right": self.right,
+                }.__repr__()
+        class Binary:
+            def __init__(self, left, op, right):
+                self.left = left
+                self.op = op
+                self.right = right
+            
+            def __repr__(self):
+                return {
+                    "name": self.__class__.__name__,
+                    "left": self.left,
+                    "op": self.op,
+                    "right": self.right,
+                }.__repr__()
+        class Unary:
+            def __init__(self, op, right):
+                self.op = op
+                self.right = right
+            
+            def __repr__(self):
+                return {
+                    "name": self.__class__.__name__,
+                    "op": self.op,
+                    "right": self.right,
+                }.__repr__()
+        class Literal:
+            def __init__(self, val):
+                self.val = val
+            
+            def __repr__(self):
+                return {
+                    "name": self.__class__.__name__,
+                    "val": self.val,
+                }.__repr__()
+        class VarAccess:
+            def __init__(self, var):
+                self.var = var
+            
+            def __repr__(self):
+                return {
+                    "name": self.__class__.__name__,
+                    "var": self.var,
+                }.__repr__()
+        class Call:
+            def __init__(self, callee, args):
+                self.callee = callee
+                self.args = args
+            
+            def __repr__(self):
+                return {
+                    "name": self.__class__.__name__,
+                    "callee": self.callee,
+                    "args": self.args,
                 }.__repr__()
 
     class Type:
