@@ -5,7 +5,11 @@ from modules.lexer.LexerResult import *
 
 keywords = [
     'fun',
-    'return'
+    'return',
+    'if',
+    'else',
+    'for',
+    'while',
 ]
 
 class Lexer:
