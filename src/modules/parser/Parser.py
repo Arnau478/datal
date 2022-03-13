@@ -104,10 +104,70 @@ class Parser:
 
             if(not self.match(TokenType.RPAREN)):
                 if(not self.match(TokenType.COMMA)):
-                    print(self.current_tok)
                     return ParseResult(error=ParseError("Expected ','", self.line))
                 self.advance()
 
             argdefs.append(Node.Stmt.Definition(name, type))
 
-        return ParseResult(Node.Stmt.Function(fun_name, argdefs, fun_type, None))
+        self.advance()
+
+        body = self.par_statement()
+        if(body.error): return body
+        body = body.result
+
+        return ParseResult(Node.Stmt.Function(fun_name, argdefs, fun_type, body))
+    
+    def par_statement(self):
+        if(self.match(TokenType.KEYWORD, "return")):
+            if(self.next_tok.type != TokenType.SEMI):
+                return ParseResult(error=ParseError("Expected ';'", self.line))
+            self.advance_n(2)
+            return ParseResult(Node.Stmt.Return())
+
+        elif(self.match(TokenType.KEYWORD, "if")):
+            if(self.next_tok.type != TokenType.LPAREN):
+                return ParseResult(error=ParseError("Expected '('", self.line))
+            self.advance_n(2) # 'if' and '('
+            
+            con = self.par_expression()
+            if(con.error): return con
+            con = con.result
+
+            if(self.next_tok.type != TokenType.RPAREN):
+                return ParseResult(error=ParseError("Expected ')'", self.line))
+            
+            body = self.par_statement()
+            if(body.error): return body
+            body = body.result
+
+            return ParseResult(Node.Stmt.If(con, body))
+
+        elif(self.match(TokenType.LBRACE)):
+            self.advance()
+
+            statements = []
+            while((not self.match(TokenType.RBRACE)) and self.current_tok != None and (not self.match(TokenType.EOF))):
+                if(self.current_tok == None or self.match(TokenType.EOF)):
+                    return ParseResult(error=ParseError("Expected '}'", self.line))
+                
+                stmt = self.par_statement()
+                if(stmt.error): return stmt
+                stmt = stmt.result
+
+                statements.append(stmt)
+            
+            self.advance()
+
+            return ParseResult(Node.Stmt.Block(statements))
+        
+        return ParseResult(error=ParseError("Expected statement", self.line))
+    
+    def par_expression(self):
+        return self.par_or()
+    
+    def par_or(self):
+        left = self.par_and()
+        
+        while(self.match(TokenType.OR):
+            pass
+
