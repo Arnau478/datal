@@ -23,6 +23,9 @@ class TokenType:
     NOT = 'NOT'
     NOT_EQ = 'NOT_EQ'
 
+    OR = 'OR'
+    AND = 'AND'
+
     STRING = 'STRING'
     NUMBER = 'NUMBER'
     

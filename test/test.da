@@ -1,5 +1,5 @@
 fun main:int(argc:int, argv:Array<string>){
-    if(3 == 3){
+    if(3 == 3 && 2 == 2){
         print("Math is not broken");
     }
     else{

@@ -25,6 +25,7 @@ class Lexer:
         tokens = []
 
         while(self.current_char):
+            print(self.current_char, self.next_char)
             if(self.current_char in [" ", "\n", "\r", "\t"]): # Irrelevant character, ignore it
                 self.advance()
             elif(self.current_char == "+"):
@@ -59,6 +60,14 @@ class Lexer:
                 self.advance()
             elif(self.current_char == ","):
                 tokens.append(Token(TokenType.COMMA, self.line))
+                self.advance()
+            elif(self.current_char == "|" and self.next_char == "|"):
+                tokens.append(Token(TokenType.OR, self.line))
+                self.advance()
+                self.advance()
+            elif(self.current_char == "&" and self.next_char == "&"):
+                tokens.append(Token(TokenType.AND, self.line))
+                self.advance()
                 self.advance()
             elif(self.current_char == ">"):
                 self.advance()
