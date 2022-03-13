@@ -25,7 +25,6 @@ class Lexer:
         tokens = []
 
         while(self.current_char):
-            print(self.current_char, self.next_char)
             if(self.current_char in [" ", "\n", "\r", "\t"]): # Irrelevant character, ignore it
                 self.advance()
             elif(self.current_char == "+"):
