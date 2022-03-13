@@ -168,6 +168,6 @@ class Parser:
     def par_or(self):
         left = self.par_and()
         
-        while(self.match(TokenType.OR):
+        while(self.match(TokenType.OR)):
             pass
 
