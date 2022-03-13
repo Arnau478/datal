@@ -1,3 +1,10 @@
 fun main:int(argc:int, argv:Array<string>){
-    return 0;
+    if(3 == 3){
+        print("Math is not broken");
+    }
+    else{
+        print("Math is broken!!!")
+    }
+
+    return;
 }

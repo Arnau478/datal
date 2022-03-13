@@ -17,15 +17,32 @@ class Node:
                     "body": self.body,
                 }.__repr__()
         class Definition:
-            def __init__(self, name, type):
-                self.name = name
+            def __init__(self, def_name, type):
+                self.def_name = def_name
                 self.type = type
             
             def __repr__(self):
                 return {
                     "name": self.__class__.__name__,
-                    "name": self.name,
+                    "def_name": self.def_name,
                     "type": self.type,
+                }.__repr__()
+        class Return:
+            def __init__(self):
+                pass
+            
+            def __repr__(self):
+                return {
+                    "name": self.__class__.__name__,
+                }.__repr__()
+        class Block:
+            def __init__(self, statements):
+                self.statements = statements
+            
+            def __repr__(self):
+                return {
+                    "name": self.__class__.__name__,
+                    "statements": self.statements,
                 }.__repr__()
 
     class Type:
