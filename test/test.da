@@ -3,7 +3,7 @@ fun main:int(argc:int, argv:Array<string>){
         print("Math is not broken");
     }
     else{
-        print("Math is broken!!!")
+        print("Math is broken!!!");
     }
 
     return;
