@@ -10,44 +10,37 @@ from modules.compiler.Compiler import *
 from modules.assembler.Assembler import *
 
 def compile(source, output=None, verbose=False):
-    print("Tokenizing... ", end="", flush=True)
+    # TOKENIZE
     lexer = Lexer(source)
     lexer_result = lexer.tokenize()
     if(lexer_result.error):
         print(lexer_result.error)
         exit(1)
     tokens = lexer_result.result
-    print("Done")
 
     if(verbose): print(f"Tokens: {tokens}")
 
-    print("Parsing... ", end="", flush=True)
+    # PARSE
     parser = Parser(tokens)
     parse_result = parser.parse()
     if(parse_result.error):
         print(parse_result.error)
         exit(1)
     ast = parse_result.result
-    print("Done")
 
     if(verbose): print(f"AST: {ast}")
 
-    print("Compiling... ", end="", flush=True)
+    # COMPILE
     compiler = Compiler(ast)
     compile_result = compiler.compile()
     if(parse_result.error):
         print(compile_result.error)
         exit(1)
     asm_code = compile_result.result
-    print("Done")
 
-    print("Assembling... ", end="", flush=True)
+    # ASSEMBLE
     assembler = Assembler(asm_code, output=output)
     assembler.assemble()
-    print("Done")
-
-    print()
-    print("Compiled successfully")
 
 def get_output_path(input_path):
     return os.path.splitext(input_path)[0]
