@@ -102,7 +102,16 @@ class Lexer:
                 s = ""
 
                 while(self.current_char != "\"" and self.current_char):
-                    s += self.current_char
+                    if(self.current_char == "\\"):
+                        self.advance()
+                        if(self.current_char == "\\"):
+                            s += "\\"
+                        elif(self.current_char == "n"):
+                            s += "\n"
+                        else:
+                            return LexerResult(error=LexicalError(f"Non-existing escape code '\\{self.current_char}'", self.line))
+                    else:
+                        s += self.current_char
                     self.advance()
                 
                 if(self.current_char == None):

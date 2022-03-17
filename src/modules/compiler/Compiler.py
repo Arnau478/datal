@@ -124,7 +124,8 @@ class Compiler:
     def visit_node_Literal(self, node: Node.Expr.Literal):
         if(node.val.type == TokenType.STRING):
             id = f"LIT_STR_{gen_id()}"
-            self.data += f"{id}: db \"{node.val.value}\", 0\n"
+            string = node.val.value.replace("\n", "\", 10, \"")
+            self.data += f"{id}: db \"{string}\", 0\n"
             self.code += f"\t\tpush {id}\n"
         elif(node.val.type == TokenType.NUMBER):
             self.code += f"\t\tpush {node.val.value}\n"
