@@ -31,7 +31,7 @@ def compile(source, output=None, verbose=False):
     if(verbose): print(f"AST: {ast}")
 
     # COMPILE
-    compiler = Compiler(ast)
+    compiler = Compiler(ast, verbose)
     compile_result = compiler.compile()
     if(parse_result.error):
         print(compile_result.error)
