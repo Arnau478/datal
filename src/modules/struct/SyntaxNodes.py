@@ -1,5 +1,3 @@
-import json
-
 class Node:
     class Stmt:
         class Function:
