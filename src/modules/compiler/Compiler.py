@@ -95,6 +95,7 @@ class Compiler:
         self.code += f"\t\tpop rax\n"
         self.code += f"\t\tpop rbx\n"
         if(node.op.type == TokenType.AND): self.code += f"\t\tand rax, rbx\n"
+        elif(node.op.type == TokenType.OR): self.code += f"\t\tor rax, rbx\n"
         else: raise Exception()
         self.code += f"\t\tpush rax\n"
 
