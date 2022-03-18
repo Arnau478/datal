@@ -1,3 +1,12 @@
+// Example code
+
+/*
+Multi-line
+comment
+*/
+
+/* /* Nested multi-line comment */ */
+
 fun main:int(argc:int, argv:Array<string>){
     if(3 == 3 && 2 == 2){
         not_broken();
