@@ -33,12 +33,15 @@ class Parser:
         return self.current_tok.type == type and (self.current_tok.value == value or value == None)
 
     def parse(self):
+        functions = []
         while(self.current_tok.type != TokenType.EOF and self.current_tok != None):
             if(self.current_tok.type == None):
                 return ParseResult(error=ParseError("Unexpected error ocurred", self.line))
             fun = self.par_function()
             if(fun.error): return fun
-            return ParseResult(fun.result)
+            functions.append(fun.result)
+        
+        return ParseResult(Node.Program(functions))
     
     def par_type(self):
         if(self.next_tok.type == TokenType.LESS): # Parametrized
@@ -288,18 +291,22 @@ class Parser:
     
     def par_call(self):
         def finish_call(callee):
+            self.advance()
+
             arguments = []
-            if(self.current_tok.type != TokenType.RPAREN):
-                first = True
-                while(self.match(TokenType.COMMA) or first):
-                    first = False
+            print(self.current_tok)
+            while(self.current_tok.type != TokenType.RPAREN):
+                arg = self.par_expression()
+                if(arg.error): return arg
+                arg = arg.result
+                arguments.append(arg)
+                if(self.current_tok.type == TokenType.COMMA):
                     self.advance()
-                    arg = self.par_expression()
-                    if(arg.error): return arg
-                    arg = arg.result
-                    arguments.append(arg)
+                elif(self.current_tok.type != TokenType.RPAREN):
+                    return ParseResult(error=ParseError("Expected ')' or ',", self.line))
             
             if(not self.match(TokenType.RPAREN)):
+                print(self.current_tok)
                 return ParseResult(error=ParseError("Expected ')'", self.line))
             self.advance()
 
@@ -331,5 +338,4 @@ class Parser:
             res = ParseResult(Node.Expr.VarAccess(self.current_tok))
             self.advance()
             return res
-        print(self.current_tok)
         return ParseResult(error=ParseError("Expected atom", self.line))

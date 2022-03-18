@@ -65,8 +65,8 @@ class Compiler:
         end_id = f"_i_end_{gen_id()}"
         
         self.code += f"\t_f_{node.fun_name.value}:\n"
-        self.code += f"\t\tpop r15\n"
         self.visit(node.body)
+        self.code += f"\t\tret\n"
 
     def visit_node_Block(self, node: Node.Stmt.Block):
         for stmt in node.statements:
@@ -139,3 +139,7 @@ class Compiler:
     
     def visit_node_Return(self, node: Node.Stmt.Return):
         self.code += f"\t\tret\n"
+    
+    def visit_node_Program(self, node: Node.Program):
+        for fun in node.functions:
+            self.visit(fun)

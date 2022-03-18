@@ -1,10 +1,17 @@
 fun main:int(argc:int, argv:Array<string>){
     if(3 == 3 && 2 == 2){
-        print("Math is not broken\n");
+        not_broken();
     }
     else{
-        print("Math is broken!!!\n");
+        broken();
     }
 
     return;
+}
+
+fun not_broken:int(){
+    print("Math is not broken\n");
+}
+fun broken:int(){
+    print("Math is broken!!!\n");
 }

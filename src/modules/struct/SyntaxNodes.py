@@ -147,3 +147,13 @@ class Node:
                     "id": self.id,
                     "args": self.args,
                 }.__repr__()
+    
+    class Program:
+            def __init__(self, functions):
+                self.functions = functions
+
+            def __repr__(self):
+                return {
+                    "name": self.__class__.__name__,
+                    "functions": self.functions,
+                }.__repr__()

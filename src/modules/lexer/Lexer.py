@@ -138,7 +138,7 @@ class Lexer:
             elif(self.current_char.isalpha()):
                 name = self.current_char
                 self.advance()
-                while (self.current_char.isalpha()):
+                while (self.current_char.isalpha() or self.current_char == "_"):
                     name += self.current_char
                     self.advance()
                 
