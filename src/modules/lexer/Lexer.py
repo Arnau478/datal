@@ -27,8 +27,19 @@ class Lexer:
         while(self.current_char):
             if(self.current_char in [" ", "\n", "\r", "\t"]): # Irrelevant character, ignore it
                 self.advance()
-            elif(self.current_char == "/" and self.next_char == "/"):
-                while(self.current_char != "\n" and self.current_char != None):
+            elif(self.current_char == "/"):
+                if(self.next_char == "/"):
+                    while(self.current_char != "\n" and self.current_char != None):
+                        self.advance()
+                elif(self.next_char == "*"):
+                    while(True):
+                        if(self.current_char == "*" and self.next_char == "/"):
+                            break
+                        self.advance()
+                    self.advance()
+                    self.advance()
+                else:
+                    tokens.append(Token(TokenType.DIV, self.line))
                     self.advance()
             elif(self.current_char == "+"):
                 tokens.append(Token(TokenType.PLUS, self.line))
@@ -38,9 +49,6 @@ class Lexer:
                 self.advance()
             elif(self.current_char == "*"):
                 tokens.append(Token(TokenType.MUL, self.line))
-                self.advance()
-            elif(self.current_char == "/"):
-                tokens.append(Token(TokenType.DIV, self.line))
                 self.advance()
             elif(self.current_char == "("):
                 tokens.append(Token(TokenType.LPAREN, self.line))
